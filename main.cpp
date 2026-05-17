@@ -198,3 +198,13 @@ int GetMouseY()
 	GetMousePoint(&mouse_x, &mouse_y);
 	return mouse_y;
 }
+//---------------------------------------------------------------------------------
+//	‚Q‚Â‚Ì Float2‚Ì‹——£‚ğ‹‚ß‚é
+//---------------------------------------------------------------------------------
+float GetFloat2Distance(Float2& pos1, Float2& pos2)
+{
+	float x = pos1.x - pos2.x;
+	float y = pos1.y - pos2.y;
+	float distance = sqrtf(x * x + y * y);
+	return distance;
+}
