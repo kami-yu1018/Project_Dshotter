@@ -113,6 +113,24 @@ void GameUpdate()
 		//	待機状態にする
 		ball_state = BALL_STAY;
 	}
+
+	//	待機状態のとき
+	if (ball_state == BALL_STAY)
+	{
+		//	マウスを押しているとき
+		if (CheckMouseInput(MOUSE_INPUT_LEFT) || CheckMouseInput(MOUSE_INPUT_RIGHT))
+		{
+			//	マウス座標の取得
+			Float2 mosue;
+			mouse.x = GetMouseX();
+			mouse.y = GetMouseY();
+			//	マウスと円の当たり判定
+			if (HitPointCircle(mouse, ball_pos, BALL_R))
+			{
+				ball_pos = mouse;
+			}
+		}
+	}
 }
 //=====================================================================
 //	描画処理
