@@ -15,4 +15,10 @@
 #define WINDOW_W 1280	// 画面サイズ　横
 #define WINDOW_H 720	// 画面サイズ　縦
 
-bool PushHitKey(int key);
+//	マウスが押されているかを取得
+bool CheckMouseInput(int button);
+//	マウスが押された瞬間を取得
+bool PushMouseInput(int button);
+//	マウスの座標を取得
+int GetMouseX();
+int GetMouseY();

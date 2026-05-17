@@ -2,7 +2,8 @@
 
 char key_buffer[256];
 int KeyFrame[256];
-int mouse_frame;
+int mouse_frame_left;
+int mouse_frame_right;
 // ------------------------------
 // WinMain
 // ------------------------------
@@ -73,6 +74,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 		GameUpdate();
 		GameRender();
 
+		//	マウスが押されたらカウント用変数を増やす
+		if (CheckMouseInput(MOUSE_INPUT_LEFT))
+		{
+			mouse_frame_left++;
+		}
+		else
+		{
+			mouse_frame_left = 0;
+		}
+		if (CheckMouseInput(MOUSE_INPUT_RIGHT))
+		{
+			mouse_frame_right++;
+		}
+		else
+		{
+			mouse_frame_right = 0;
+		}
+
 		// リフレッシュレートが一定になるまで待つ処理
 		while (clock() < check_fps) {}
 
@@ -107,19 +126,75 @@ bool PushHitKey(int key) {
 	}
 	return false;
 }
-//	キーを押した瞬間
-bool PushMouseInput()
+//---------------------------------------------------------------------------------
+//	マウスが押されているかを取得
+//---------------------------------------------------------------------------------
+bool CheckMouseInput(int button)
 {
-	if (GetMouseInput())
-	{
-		mouse_frame++;
-	}
-	if (mouse_frame == 1)
+	if (GetMouseInput() & button)
 	{
 		return true;
 	}
+	return false;
+}
+//---------------------------------------------------------------------------------
+//	マウスクリックフレームのカウント
+//---------------------------------------------------------------------------------
+void GetMouseFrame()
+{
+	if (CheckMouseInput(MOUSE_INPUT_LEFT) == true)
+	{
+		mouse_frame_left++;
+	}
 	else
 	{
-		return false;
+		mouse_frame_left = 0;
 	}
+	if (CheckMouseInput(MOUSE_INPUT_RIGHT) == true)
+	{
+		mouse_frame_right++;
+	}
+	else
+	{
+		mouse_frame_right = 0;
+	}
+}
+
+//---------------------------------------------------------------------------------
+//	マウスが押された瞬間を取得
+//---------------------------------------------------------------------------------
+bool PushMouseInput(int button)
+{
+	if (button & MOUSE_INPUT_LEFT)
+	{
+		if (mouse_frame_left == 1)
+		{
+			return true;
+		}
+	}
+	if (button & MOUSE_INPUT_RIGHT)
+	{
+		if (mouse_frame_right == 1)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+//---------------------------------------------------------------------------------
+// マウス座標の取得
+//---------------------------------------------------------------------------------
+int GetMouseX()
+{
+	int mouse_x;
+	int mouse_y;
+	GetMousePoint(&mouse_x, &mouse_y);
+	return mouse_x;
+}
+int GetMouseY()
+{
+	int mouse_x;
+	int mouse_y;
+	GetMousePoint(&mouse_x, &mouse_y);
+	return mouse_y;
 }
