@@ -41,13 +41,79 @@ void GameUpdate()
 	mouse.y = (float)GetMouseY();
 
 	//	ボールが待機状態で無いとき
+	if (ball_state != BALL_STAY)
+	{
+		//	マウスをクリックした瞬間
+		if (PushMouseInput(MOUSE_INPUT_LEFT)||PushMouseInput(MOUSE_INPUT_RIGHT))
+		{
+			//	起点、終点、中間点を同じ座標に打つ
+			for (int i = 0; i < 3; ++i)
+			{
+				point[i] = mouse;
+			}
+			//	ボールの座標もマウスの位置に設定
+			ball_pos = mouse;
+		}
+	}
+
+	//	マウスを押しているとき
+	if (CheckMouseInput(MOUSE_INPUT_LEFT) || CheckMouseInput(MOUSE_INPUT_RIGHT))
+	{
+		//	起点の座標を決める
+		Float2 before = point[0];
+		//	２点間の距離を求める
+		float distance = GetFloat2Distance(mouse, before);
+
+		//	２点間の距離が範囲よりもでかいとき
+		if (distance > LENGTH)
+		{
+			//	方向ベクトルの作成
+			Float2 dir;
+			dir.x = mouse.x - before.x;
+			dir.y = mouse.y - before.y;
+
+			//	方向ベクトルの取得（基準値 1.0f を取得する）
+			dir.x /= distance;
+			dir.y /= distance;
+
+			//	長さを範囲分の長さにする
+			Float2 dir_1;
+			Float2 dir_2;
+
+			dir_1.x = dir.x * HALF_LENGTH;
+			dir_1.y = dir.y * HALF_LENGTH;
+
+			dir_2.x = dir.x * LENGTH;
+			dir_2.y = dir.y * LENGTH;
+
+			//	終点座標を決める
+			point[2].x = before.x + dir_2.x;
+			point[2].y = before.y + dir_2.y;
+			//	中間点座標を決める
+			point[1].x = before.x + dir_1.x;
+			point[1].y = before.y + dir_1.y;
+			//	もし初球が打たれていないとき、ボールの座標を設定する
+			if (first_ball == 0)
+			{
+				ball_pos = point[1];
+			}
+		}
+	}
 }
 //=====================================================================
 //	描画処理
 //=====================================================================
 void GameRender()
 {
-	
+	//	点の描画
+	DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 0, 0));
+	DrawCircleAA(point[1].x, point[1].y, 5.0f, 50, GetColor(128, 128, 128));
+	DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(0, 0, 255));
+
+	//	線の描画
+	Float2 pos1 = point[0];
+	Float2 pos2 = point[2];
+	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
 }
 //=====================================================================
 //	終了処理
