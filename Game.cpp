@@ -114,6 +114,9 @@ void GameRender()
 	Float2 pos1 = point[0];
 	Float2 pos2 = point[2];
 	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
+
+	//	É{Å[ÉãÇÃï`âÊ
+	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
 }
 //=====================================================================
 //	èIóπèàóù
