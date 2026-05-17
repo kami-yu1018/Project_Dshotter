@@ -99,6 +99,20 @@ void GameUpdate()
 			}
 		}
 	}
+
+	//	始点と終点が一致していないとき
+	if (point[1].x != point[2].x && point[1].y != point[2].y)
+	{
+		//	線が引かれている
+		line = 1;
+	}
+
+	//	ラインが引かれている＆初球が打たれていない＆マウスを押していないとき
+	if (line == 1 && first_ball == 0 && CheckMouseInput(MOUSE_INPUT_LEFT) == 0)
+	{
+		//	待機状態にする
+		ball_state = BALL_STAY;
+	}
 }
 //=====================================================================
 //	描画処理
