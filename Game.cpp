@@ -17,7 +17,9 @@ enum					//	ボールの状態用定数
 };
 int ball_state;			//	ボールが今どのような状態であるか
 bool first_ball;		//	最初のボールが放たれたか（０：まだ　１：放たれている）
-bool ball_chach;		//	ボールを線でキャッチしているか
+bool ball_chach;			//	ボールを線でキャッチしている秒数
+Float2 ball_speed;		//	ボールのスピード
+
 bool line;				//	線が引かれている状態か
 
 //=====================================================================
@@ -29,6 +31,8 @@ void GameInit()
 	ball_state = BALL_BEFORE;
 	first_ball = 0;
 	ball_chach = 0;
+	ball_speed = { 0.0f,0.0f };
+
 	line = 0;
 }
 //=====================================================================
@@ -54,51 +58,53 @@ void GameUpdate()
 			//	ボールの座標もマウスの位置に設定
 			ball_pos = mouse;
 		}
-	}
 
-	//	マウスを押しているとき
-	if (CheckMouseInput(MOUSE_INPUT_LEFT) || CheckMouseInput(MOUSE_INPUT_RIGHT))
-	{
-		//	起点の座標を決める
-		Float2 before = point[0];
-		//	２点間の距離を求める
-		float distance = GetFloat2Distance(mouse, before);
-
-		//	２点間の距離が範囲よりもでかいとき
-		if (distance > LENGTH)
+		//	マウスを押しているとき
+		if (CheckMouseInput(MOUSE_INPUT_LEFT) || CheckMouseInput(MOUSE_INPUT_RIGHT))
 		{
-			//	方向ベクトルの作成
-			Float2 dir;
-			dir.x = mouse.x - before.x;
-			dir.y = mouse.y - before.y;
+			//	起点の座標を決める
+			Float2 before = point[0];
+			//	２点間の距離を求める
+			float distance = GetFloat2Distance(mouse, before);
 
-			//	方向ベクトルの取得（基準値 1.0f を取得する）
-			dir.x /= distance;
-			dir.y /= distance;
-
-			//	長さを範囲分の長さにする
-			Float2 dir_1;
-			Float2 dir_2;
-
-			dir_1.x = dir.x * HALF_LENGTH;
-			dir_1.y = dir.y * HALF_LENGTH;
-
-			dir_2.x = dir.x * LENGTH;
-			dir_2.y = dir.y * LENGTH;
-
-			//	終点座標を決める
-			point[2].x = before.x + dir_2.x;
-			point[2].y = before.y + dir_2.y;
-			//	中間点座標を決める
-			point[1].x = before.x + dir_1.x;
-			point[1].y = before.y + dir_1.y;
-			//	もし初球が打たれていないとき、ボールの座標を設定する
-			if (first_ball == 0)
+			//	２点間の距離が範囲よりもでかいとき
+			if (distance > LENGTH)
 			{
-				ball_pos = point[1];
+				//	方向ベクトルの作成
+				Float2 dir;
+				dir.x = mouse.x - before.x;
+				dir.y = mouse.y - before.y;
+
+				//	方向ベクトルの取得（基準値 1.0f を取得する）
+				dir.x /= distance;
+				dir.y /= distance;
+
+				//	長さを範囲分の長さにする
+				Float2 dir_1;
+				Float2 dir_2;
+
+				dir_1.x = dir.x * HALF_LENGTH;
+				dir_1.y = dir.y * HALF_LENGTH;
+
+				dir_2.x = dir.x * LENGTH;
+				dir_2.y = dir.y * LENGTH;
+
+				//	終点座標を決める
+				point[2].x = before.x + dir_2.x;
+				point[2].y = before.y + dir_2.y;
+				//	中間点座標を決める
+				point[1].x = before.x + dir_1.x;
+				point[1].y = before.y + dir_1.y;
+				//	もし初球が打たれていないとき、ボールの座標を設定する
+				if (first_ball == 0)
+				{
+					ball_pos = point[1];
+				}
 			}
 		}
 	}
+
+	
 
 	//	始点と終点が一致していないとき
 	if (point[1].x != point[2].x && point[1].y != point[2].y)
@@ -127,9 +133,43 @@ void GameUpdate()
 			//	マウスと円の当たり判定
 			if (HitPointCircle(mouse, ball_pos, BALL_R))
 			{
+				//	ボールがマウス座標と同じになる
 				ball_pos = mouse;
+				//	ボールをキャッチしている秒数をカウント
+				ball_chach=1;
 			}
 		}
+		//	マウスを押していない時
+		if (CheckMouseInput(MOUSE_INPUT_LEFT) == 0 && CheckMouseInput(MOUSE_INPUT_RIGHT) == 0)
+		{
+			//	ボールをキャッチしている状態のとき
+			if (ball_chach > 1)
+			{
+				//	０にする
+				ball_chach = 0;
+
+				//	ボールのスピードと放つ方向を決める
+				//	ボールと中間点との距離を取得する
+				Float2 pos;
+				pos.x = ball_pos.x - point[1].x;
+				pos.y = ball_pos.x - point[1].y;
+
+				//	ボールの移動量を設定
+				ball_speed.x = pos.x * 0.5f;
+				ball_speed.y = pos.y * 0.5f;
+
+				//	ボールを移動している状態にする
+				ball_state = BALL_MOVE;
+			}
+		}
+	}
+
+	//	ボールが移動している時
+	if (ball_state == BALL_MOVE)
+	{
+		//	ボール座標にスピードを足す
+		ball_pos.x += ball_speed.x;
+		ball_pos.y += ball_speed.y;
 	}
 }
 //=====================================================================
@@ -146,9 +186,13 @@ void GameRender()
 	Float2 pos1 = point[0];
 	Float2 pos2 = point[2];
 	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
+	DrawLineAA(ball_pos.x, ball_pos.y, point[1].x, point[1].y, GetColor(255, 255, 255));
 
 	//	ボールの描画
 	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
+
+	DrawFormatString(100, 100, GetColor(255, 0, 0), "%f,%f", ball_pos.x, ball_pos.y);
+	DrawFormatString(100, 120, GetColor(255, 0, 0), "%f,%f", ball_speed.x, ball_speed.y);
 }
 //=====================================================================
 //	終了処理
