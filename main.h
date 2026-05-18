@@ -10,18 +10,12 @@
 
 #include"Game.h"
 #include<math.h>
+#include"Val.h"
 
 
 //	定数の宣言
 #define WINDOW_W 1280	// 画面サイズ　横
 #define WINDOW_H 720	// 画面サイズ　縦
-
-//	x座標とy座標を設定する構造体
-struct Float2
-{
-	float x;
-	float y;
-};
 
 //	マウスが押されているかを取得
 bool CheckMouseInput(int button);

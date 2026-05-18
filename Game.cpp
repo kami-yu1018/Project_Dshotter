@@ -122,8 +122,8 @@ void GameUpdate()
 		{
 			//	マウス座標の取得
 			Float2 mosue;
-			mouse.x = GetMouseX();
-			mouse.y = GetMouseY();
+			mouse.x = (float)GetMouseX();
+			mouse.y = (float)GetMouseY();
 			//	マウスと円の当たり判定
 			if (HitPointCircle(mouse, ball_pos, BALL_R))
 			{
