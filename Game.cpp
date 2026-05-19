@@ -56,7 +56,11 @@ void GameUpdate()
 				point[i] = mouse;
 			}
 			//	ボールの座標もマウスの位置に設定
-			ball_pos = mouse;
+			//	（初球のみ）
+			if(first_ball==0)
+			{
+				ball_pos = mouse;
+			}
 		}
 
 		//	マウスを押しているとき
@@ -143,23 +147,25 @@ void GameUpdate()
 		if (CheckMouseInput(MOUSE_INPUT_LEFT) == 0 && CheckMouseInput(MOUSE_INPUT_RIGHT) == 0)
 		{
 			//	ボールをキャッチしている状態のとき
-			if (ball_chach > 1)
+			if (ball_chach == 1)
 			{
 				//	０にする
 				ball_chach = 0;
+				//	ボールを移動している状態にする
+				ball_state = BALL_MOVE;
+
+				//	最初のボールが打たれた判定を返す
+				first_ball = 1;
 
 				//	ボールのスピードと放つ方向を決める
 				//	ボールと中間点との距離を取得する
 				Float2 pos;
 				pos.x = ball_pos.x - point[1].x;
-				pos.y = ball_pos.x - point[1].y;
+				pos.y = ball_pos.y - point[1].y;
 
 				//	ボールの移動量を設定
-				ball_speed.x = pos.x * 0.5f;
-				ball_speed.y = pos.y * 0.5f;
-
-				//	ボールを移動している状態にする
-				ball_state = BALL_MOVE;
+				ball_speed.x = pos.x * -0.1f;
+				ball_speed.y = pos.y * -0.1f;
 			}
 		}
 	}
@@ -186,13 +192,13 @@ void GameRender()
 	Float2 pos1 = point[0];
 	Float2 pos2 = point[2];
 	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
-	DrawLineAA(ball_pos.x, ball_pos.y, point[1].x, point[1].y, GetColor(255, 255, 255));
 
 	//	ボールの描画
 	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
 
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "%f,%f", ball_pos.x, ball_pos.y);
 	DrawFormatString(100, 120, GetColor(255, 0, 0), "%f,%f", ball_speed.x, ball_speed.y);
+	DrawFormatString(100, 140, GetColor(255, 0, 0), "%d,%d", ball_state,ball_chach);
 }
 //=====================================================================
 //	終了処理
