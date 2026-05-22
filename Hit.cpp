@@ -11,3 +11,45 @@ bool HitPointCircle(Float2 point, Float2 circle, float radius)
 	}
 	return false;
 }
+//	ü‚Æ‰~‚Ì“–‚½‚è”»’è
+bool HitLinePoint(Float2 point_f, Float2 point_e, Float2 circle, float radius)
+{
+
+	//	ü•ª‚ÌƒxƒNƒgƒ‹
+	Float2 line = { point_e.x - point_f.x,point_e.x - point_f.x };
+	//	‰~‚©‚çü‚Ìn“_‚ÌƒxƒNƒgƒ‹
+	Float2 li_ci = { circle.x - point_f.x,circle.y - point_f.y };
+
+	//	ü•ª‚Ì’·‚³‚Ì2æ
+	float line2 = line.x * line.x + line.y * line.y;
+
+	//	‰~‚ÌÀ•W‚ğü•ª‚ÉË‰e‚µ‚½‚ÌŒW”i‚O`‚P‚È‚ç‚Îü•ªãj
+	float t = (li_ci.x * line.x + li_ci.y * line.y) / line2;
+
+	//	t‚ğ‚O`‚P‚ÉŒÅ’è
+	if (t < 0.0f)
+	{
+		t = 0.0f;
+	}
+	if (t > 1.0f)
+	{
+		t = 1.0f;
+	}
+
+	//	ü•ªã‚Ì“_P‚ğ‚Æ‚é
+	//	‚±‚Ì“_P‚Í‰~‚ÌÀ•W‚Æ‚Â‚È‚°‚é‚Æü•ª‚©‚ç‰~‚Ö‚ÌÅ’Z‹——£‚Æ‚È‚é
+	Float2 p = { point_f.x + line.x * t,point_f.y + line.y * t };
+
+	DrawCircleAA(p.x, p.y, 3.0f, 50, GetColor(0, 0, 0));
+
+	//	‰~‚Ì’†SÀ•W‚Æp‚Æ‚Ì‹——£
+	float dx = p.x - circle.x;
+	float dy = p.y - circle.y;
+	float dist2 = dx * dx + dy * dy;
+
+	if (dist2 <= radius * radius)
+	{
+		return true;
+	}
+	return false;
+}
