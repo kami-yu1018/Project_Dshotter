@@ -22,6 +22,7 @@ Float2 ball_speed;		//	ボールのスピード
 
 bool line;				//	線が引かれている状態か
 
+
 //=====================================================================
 //	初期化処理
 //=====================================================================
@@ -166,6 +167,13 @@ void GameUpdate()
 				//	ボールの移動量を設定
 				ball_speed.x = pos.x * -0.1f;
 				ball_speed.y = pos.y * -0.1f;
+
+				//	線を消す
+				line = 0;
+				for (int i = 0; i < 3; ++i)
+				{
+					point[i] = { NULL,NULL };
+				}
 			}
 		}
 	}
@@ -176,6 +184,20 @@ void GameUpdate()
 		//	ボール座標にスピードを足す
 		ball_pos.x += ball_speed.x;
 		ball_pos.y += ball_speed.y;
+
+		if (HitLineCircle(point[0], point[2], ball_pos, BALL_R))
+		{
+			if(line == 1)
+			{
+				ball_pos = point[1];
+
+				ball_speed = {0.0f,0.0f};
+
+				ball_chach = 1;
+				
+				ball_state == BALL_STAY;
+			}
+		}
 	}
 }
 //=====================================================================
