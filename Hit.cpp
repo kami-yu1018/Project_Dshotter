@@ -57,3 +57,15 @@ bool Hit::HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float rad
 	}
 	return false;
 }
+//	ŽlŠp‚Æ‰~‚Ì“–‚½‚è”»’è
+bool Hit::HitBoxCircle(Float2 box, float box_w, float box_h, Float2 circle, float radius)
+{
+	if (box.x<circle.x + radius && box.x + box_w>circle.x - radius)
+	{
+		if (box.y<circle.y + radius && box.y + box_h>circle.y - radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}

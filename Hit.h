@@ -14,5 +14,8 @@ public:
 	bool HitPointCircle(Float2 point, Float2 circle, float radius);
 	//	ü‚Æ‰~‚Ì“–‚½‚è”»’è
 	bool HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius);
+	//	lŠp‚Æ‰~‚Ì“–‚½‚è”»’è
+	bool HitBoxCircle(Float2 box, float box_w, float box_h, Float2 circle, float radius);
+
 };
 
