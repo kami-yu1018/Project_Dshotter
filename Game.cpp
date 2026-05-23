@@ -192,10 +192,8 @@ void GameUpdate()
 				ball_pos = point[1];
 
 				ball_speed = {0.0f,0.0f};
-
-				ball_chach = 1;
 				
-				ball_state == BALL_STAY;
+				ball_state = BALL_STAY;
 			}
 		}
 	}
