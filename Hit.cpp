@@ -1,7 +1,7 @@
 #include"Hit.h"
 
 //	“_‚Æ‰~‚Ì“–‚½‚è”»’è
-bool HitPointCircle(Float2 point, Float2 circle, float radius)
+bool Hit::HitPointCircle(Float2 point, Float2 circle, float radius)
 {
 	float distance = GetFloat2Distance(point, circle);	//	“_‚Æ‰~‚ÌÀ•W‚Æ‚Ì‹——£‚ğæ“¾
 	//	‹——£‚ª”¼Œa‚æ‚è‚à¬‚³‚¢‚Æ‚«“–‚½‚Á‚Ä‚¢‚é
@@ -12,7 +12,7 @@ bool HitPointCircle(Float2 point, Float2 circle, float radius)
 	return false;
 }
 //	ü‚Æ‰~‚Ì“–‚½‚è”»’è
-bool HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius)
+bool Hit::HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius)
 {
 	VECTOR p1 = VGet(point_f.x, point_f.y, 0.0f);
 	VECTOR p2 = VGet(point_e.x, point_e.y, 0.0f);
@@ -51,6 +51,8 @@ bool HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius)
 
 	if (dist2 <= radius * radius)
 	{
+		pos.x = p.x;
+		pos.y = p.y;
 		return true;
 	}
 	return false;

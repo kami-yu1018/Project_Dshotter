@@ -22,6 +22,8 @@ Float2 ball_speed;		//	ボールのスピード
 
 bool line;				//	線が引かれている状態か
 
+//	インスタンス化
+Hit hit_obj;
 
 //=====================================================================
 //	初期化処理
@@ -136,7 +138,7 @@ void GameUpdate()
 			mouse.x = (float)GetMouseX();
 			mouse.y = (float)GetMouseY();
 			//	マウスと円の当たり判定
-			if (HitPointCircle(mouse, ball_pos, BALL_R))
+			if (hit_obj.HitPointCircle(mouse, ball_pos, BALL_R))
 			{
 				//	ボールがマウス座標と同じになる
 				ball_pos = mouse;
@@ -185,11 +187,11 @@ void GameUpdate()
 		ball_pos.x += ball_speed.x;
 		ball_pos.y += ball_speed.y;
 
-		if (HitLineCircle(point[0], point[2], ball_pos, BALL_R))
+		if (hit_obj.HitLineCircle(point[0], point[2], ball_pos, BALL_R))
 		{
 			if(line == 1)
 			{
-				ball_pos = point[1];
+				ball_pos = hit_obj.pos;
 
 				ball_speed = {0.0f,0.0f};
 				
@@ -215,10 +217,6 @@ void GameRender()
 
 	//	ボールの描画
 	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
-
-	DrawFormatString(100, 100, GetColor(255, 0, 0), "%f,%f", ball_pos.x, ball_pos.y);
-	DrawFormatString(100, 120, GetColor(255, 0, 0), "%f,%f", ball_speed.x, ball_speed.y);
-	DrawFormatString(100, 140, GetColor(255, 0, 0), "%d,%d", ball_state,ball_chach);
 }
 //=====================================================================
 //	終了処理

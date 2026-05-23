@@ -3,7 +3,16 @@
 #include"main.h"
 #include"Val.h"
 
-//	点と円の当たり判定
-bool HitPointCircle(Float2 point, Float2 circle, float radius);
-//	線と円の当たり判定
-bool HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius);
+class Hit
+{
+public:
+	//	位置座標を入れる用
+	Float2 pos;
+
+
+	//	点と円の当たり判定
+	bool HitPointCircle(Float2 point, Float2 circle, float radius);
+	//	線と円の当たり判定
+	bool HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius);
+};
+
