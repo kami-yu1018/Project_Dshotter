@@ -211,7 +211,26 @@ void GameUpdate()
 		}
 	}
 
+	//	ボールとブロックの当たり判定
+	for (int i = 0; i < BLOCK_MAX; ++i)
+	{
+		if (hit_obj.HitBoxCircle(block[i].pos, BLOCK_W, BLOCK_H, ball_pos, BALL_R))
+		{
+			//	ブロックの体力があるときに作動するようにする
+			if (block[i].life > 0)
+			{
+				//	ブロックの体力を減らす
+				block[i].life--;
+				if (block[i].life < 0)
+				{
+					block[i].life = 0;
+				}
 
+				//	プレイヤーのスピードを変える
+			}
+
+		}
+	}
 }
 //=====================================================================
 //	描画処理
@@ -233,7 +252,10 @@ void GameRender()
 
 	for(int i=0;i<BLOCK_MAX;++i)
 	{
-		DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+		if(block[i].life>0)
+		{
+			DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+		}
 	}
 }
 //=====================================================================

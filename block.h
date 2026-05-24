@@ -28,7 +28,7 @@ public:
 	//	‰Šúİ’è
 	void Init()
 	{
-		pos.x = num_x * 50.0f + 10;
+		pos.x = num_x * 50.0f + 10.0f;
 		pos.y = num_y * 50.0f;
 
 		life = 2;
