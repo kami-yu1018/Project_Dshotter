@@ -40,6 +40,14 @@ void GameInit()
 	ball_speed = { 0.0f,0.0f };
 
 	line = 0;
+
+	//	ブロックの位置を決める
+	for (int i = 0; i < BLOCK_MAX; ++i)
+	{
+		block[i].Block_area();
+		block[i].Init();
+	}
+
 }
 //=====================================================================
 //	更新処理
@@ -222,6 +230,11 @@ void GameRender()
 
 	//	ボールの描画
 	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
+
+	for(int i=0;i<BLOCK_MAX;++i)
+	{
+		DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+	}
 }
 //=====================================================================
 //	終了処理
