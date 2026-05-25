@@ -30,14 +30,20 @@ enum
 	SCENE_GAMEOVER,
 	SCENE_CLEAR,
 };
-
+//	シーンを入れる用の変数
 int scene;
+
+
+//	撃破数
+int kill;
 
 //	インスタンス化
 Hit hit_obj;
 
 #define BLOCK_MAX 20
 Block block[BLOCK_MAX];
+
+Time g_time;
 
 //=====================================================================
 //	初期化処理
@@ -63,7 +69,36 @@ void GameUpdate()
 
 	if (scene == SCENE_GAME)
 	{
+		//	ゲームの処理
 		GamePlay();
+
+		g_time.frame_count++;
+		//	時間に変換
+		g_time.Count();
+
+		//	撃破数のカウント
+		kill = Kill_Count();
+
+		//	ゲームオーバー条件が揃ったらゲームオーバーにする
+		if (GameOver() == 1)
+		{
+			scene = SCENE_GAMEOVER;
+		}
+	}
+
+	if (scene == SCENE_GAMEOVER)
+	{
+		//	Ｒキーを押したらリトライ
+		if (CheckHitKey(KEY_INPUT_R))
+		{
+			scene = SCENE_GAME;
+			GameSet();
+		}
+		//	スペースキーでタイトルへ
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			scene = SCENE_OP;
+		}
 	}
 	
 }
@@ -72,25 +107,45 @@ void GameUpdate()
 //=====================================================================
 void GameRender()
 {
-	//	点の描画
-	DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 0, 0));
-	DrawCircleAA(point[1].x, point[1].y, 5.0f, 50, GetColor(128, 128, 128));
-	DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(0, 0, 255));
-
-	//	線の描画
-	Float2 pos1 = point[0];
-	Float2 pos2 = point[2];
-	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
-
-	//	ボールの描画
-	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
-
-	for(int i=0;i<BLOCK_MAX;++i)
+	if(scene==SCENE_GAME)
 	{
-		if(block[i].life>0)
+		//	点の描画
+		DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 0, 0));
+		DrawCircleAA(point[1].x, point[1].y, 5.0f, 50, GetColor(128, 128, 128));
+		DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(0, 0, 255));
+
+		//	線の描画
+		Float2 pos1 = point[0];
+		Float2 pos2 = point[2];
+		DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
+
+		//	ボールの描画
+		DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
+
+		for (int i = 0; i < BLOCK_MAX; ++i)
 		{
-			DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+			if (block[i].life > 0)
+			{
+				DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+			}
 		}
+	}
+
+	if (scene == SCENE_OP)
+	{
+		DrawStringF(100.0f, 100.0f,"DragShotter", GetColor(255, 0, 0));
+	}
+	if (scene == SCENE_GAMEOVER)
+	{
+		DrawStringF(100.0f, 100.0f, "GameOver", GetColor(0, 0, 255));
+		DrawStringF(10.0f, 140.0f, "Ｒ→リトライ", GetColor(255, 0, 0));
+		DrawStringF(10.0f, 160.0f, "ＳＰＡＣＥ→タイトルへ戻る", GetColor(255, 0, 0));
+
+	}
+	if (scene == SCENE_CLEAR)
+	{
+		DrawStringF(100.0f, 100.0f, "GameClear", GetColor(255, 0, 0));
+		DrawFormatStringF(100.0f, 120.0f, GetColor(255, 255, 0), "%d : %d : %d : %d", g_time.h, g_time.m, g_time.s, g_time.frame_count);
 	}
 }
 //=====================================================================
@@ -118,6 +173,9 @@ void GameSet()
 		block[i].Block_area();
 		block[i].Init();
 	}
+
+	//	カウントの初期設定
+	g_time.Set();
 }
 
 //	ゲーム中の処理
@@ -309,4 +367,32 @@ void GamePlay()
 
 		}
 	}
+}
+
+//	撃破数の計算
+int Kill_Count()
+{
+	int num = 0;
+	for (int i = 0; i < BLOCK_MAX; ++i)
+	{
+		if (block[i].life == 0)
+		{
+			num++;
+		}
+	}
+
+	return num;
+}
+
+//	ゲームオーバー時の処理
+bool GameOver()
+{
+	if (ball_pos.x + BALL_R<0 ||
+		ball_pos.x - BALL_R>WINDOW_W ||
+		ball_pos.y + BALL_R<0 ||
+		ball_pos.y - BALL_R>WINDOW_H)
+	{
+		return true;
+	}
+	return false;
 }
