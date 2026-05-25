@@ -3,5 +3,19 @@
 #include"main.h"
 #include"Val.h"
 
-//	“_‚Æ‰~‚Ì“–‚½‚è”»’è
-bool HitPointCircle(Float2 point, Float2 circle, float radius);
+class Hit
+{
+public:
+	//	ˆÊ’uÀ•W‚ğ“ü‚ê‚é—p
+	Float2 pos;
+
+
+	//	“_‚Æ‰~‚Ì“–‚½‚è”»’è
+	bool HitPointCircle(Float2 point, Float2 circle, float radius);
+	//	ü‚Æ‰~‚Ì“–‚½‚è”»’è
+	bool HitLineCircle(Float2 point_f, Float2 point_e, Float2 circle, float radius);
+	//	lŠp‚Æ‰~‚Ì“–‚½‚è”»’è
+	bool HitBoxCircle(Float2 box, float box_w, float box_h, Float2 circle, float radius);
+
+};
+
