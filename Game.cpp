@@ -122,11 +122,12 @@ void GameRender()
 		//	ボールの描画
 		DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
 
+		//	ブロックの描画
 		for (int i = 0; i < BLOCK_MAX; ++i)
 		{
 			if (block[i].life > 0)
 			{
-				DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+				DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, block[i].color, TRUE);
 			}
 		}
 	}
@@ -355,9 +356,9 @@ void GamePlay()
 		}
 	}
 
-	//	ボールとブロックの当たり判定
 	for (int i = 0; i < BLOCK_MAX; ++i)
 	{
+		//	ボールとブロックの当たり判定
 		if (hit_obj.HitBoxCircle(block[i].pos, BLOCK_W, BLOCK_H, ball_pos, BALL_R) == 1)
 		{
 
@@ -388,8 +389,10 @@ void GamePlay()
 					block[i].life = 0;
 				}
 			}
-
 		}
+		//	ブロックの色を変更する
+		block[i].ColorChange();
+
 	}
 }
 
