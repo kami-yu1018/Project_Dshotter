@@ -15,3 +15,4 @@ void GamePlay();
 int Kill_Count();
 
 bool GameOver();
+void EndGame_Next();

@@ -84,21 +84,21 @@ void GameUpdate()
 		{
 			scene = SCENE_GAMEOVER;
 		}
+
+		if (kill == BLOCK_MAX)
+		{
+			scene = SCENE_CLEAR;
+		}
 	}
 
 	if (scene == SCENE_GAMEOVER)
 	{
-		//	Ｒキーを押したらリトライ
-		if (CheckHitKey(KEY_INPUT_R))
-		{
-			scene = SCENE_GAME;
-			GameSet();
-		}
-		//	スペースキーでタイトルへ
-		if (CheckHitKey(KEY_INPUT_SPACE))
-		{
-			scene = SCENE_OP;
-		}
+		EndGame_Next();
+	}
+
+	if (scene == SCENE_CLEAR)
+	{
+		EndGame_Next();
 	}
 	
 }
@@ -134,12 +134,13 @@ void GameRender()
 	if (scene == SCENE_OP)
 	{
 		DrawStringF(100.0f, 100.0f,"DragShotter", GetColor(255, 0, 0));
+		DrawStringF(100.0f, 120.0f, "Push Space To Start", GetColor(255, 0, 0));
 	}
 	if (scene == SCENE_GAMEOVER)
 	{
 		DrawStringF(100.0f, 100.0f, "GameOver", GetColor(0, 0, 255));
 		DrawStringF(10.0f, 140.0f, "Ｒ→リトライ", GetColor(255, 0, 0));
-		DrawStringF(10.0f, 160.0f, "ＳＰＡＣＥ→タイトルへ戻る", GetColor(255, 0, 0));
+		DrawStringF(10.0f, 160.0f, "ENTER→タイトルへ戻る", GetColor(255, 0, 0));
 
 	}
 	if (scene == SCENE_CLEAR)
@@ -147,6 +148,8 @@ void GameRender()
 		DrawStringF(100.0f, 100.0f, "GameClear", GetColor(255, 0, 0));
 		DrawFormatStringF(100.0f, 120.0f, GetColor(255, 255, 0), "%d : %d : %d : %d", g_time.h, g_time.m, g_time.s, g_time.frame_count);
 	}
+
+	DrawFormatString(200, 200, GetColor(0, 0, 0), "%d", kill);
 }
 //=====================================================================
 //	終了処理
@@ -160,11 +163,18 @@ void GameExit()
 void GameSet()
 {
 	//	各初期化処理
+	//	ボール
+	ball_pos = { NULL,NULL };
 	ball_state = BALL_BEFORE;
 	first_ball = 0;
 	ball_chach = 0;
 	ball_speed = { 0.0f,0.0f };
 
+
+	for (int i = 0; i < 3; ++i)
+	{
+		point[i] = { NULL,NULL };
+	}
 	line = 0;
 
 	//	ブロックの位置を決める
@@ -244,6 +254,7 @@ void GamePlay()
 				if (first_ball == 0)
 				{
 					ball_pos = point[1];
+					hit_obj.pos = point[1];
 				}
 			}
 		}
@@ -301,8 +312,8 @@ void GamePlay()
 				//	ボールのスピードと放つ方向を決める
 				//	ボールと中間点との距離を取得する
 				Float2 pos;
-				pos.x = ball_pos.x - point[1].x;
-				pos.y = ball_pos.y - point[1].y;
+				pos.x = ball_pos.x - hit_obj.pos.x;
+				pos.y = ball_pos.y - hit_obj.pos.y;
 
 				//	ボールの移動量を設定
 				ball_speed.x = pos.x * -0.1f;
@@ -384,7 +395,7 @@ int Kill_Count()
 	return num;
 }
 
-//	ゲームオーバー時の処理
+//	ゲームオーバーになる時の処理
 bool GameOver()
 {
 	if (ball_pos.x + BALL_R<0 ||
@@ -395,4 +406,20 @@ bool GameOver()
 		return true;
 	}
 	return false;
+}
+
+//	ゲーム終了時にキーによって次のシーンを決める処理
+void EndGame_Next()
+{
+	//	Ｒキーを押したらリトライ
+	if (CheckHitKey(KEY_INPUT_R))
+	{
+		scene = SCENE_GAME;
+		GameSet();
+	}
+	//	エンターキーでタイトルへ
+	if (CheckHitKey(KEY_INPUT_RETURN))
+	{
+		scene = SCENE_OP;
+	}
 }
