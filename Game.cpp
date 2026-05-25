@@ -84,7 +84,7 @@ void GameUpdate()
 		{
 			scene = SCENE_GAMEOVER;
 		}
-
+		//	ブロックを全部消したらゲームクリア
 		if (kill == BLOCK_MAX)
 		{
 			scene = SCENE_CLEAR;
@@ -131,11 +131,14 @@ void GameRender()
 		}
 	}
 
+	//	各シーン時に表示するもの
+	//	タイトル
 	if (scene == SCENE_OP)
 	{
 		DrawStringF(100.0f, 100.0f,"DragShotter", GetColor(255, 0, 0));
 		DrawStringF(100.0f, 120.0f, "Push Space To Start", GetColor(255, 0, 0));
 	}
+	//	ゲームオーバー
 	if (scene == SCENE_GAMEOVER)
 	{
 		DrawStringF(100.0f, 100.0f, "GameOver", GetColor(0, 0, 255));
@@ -143,13 +146,14 @@ void GameRender()
 		DrawStringF(10.0f, 160.0f, "ENTER→タイトルへ戻る", GetColor(255, 0, 0));
 
 	}
+	//	クリア
 	if (scene == SCENE_CLEAR)
 	{
 		DrawStringF(100.0f, 100.0f, "GameClear", GetColor(255, 0, 0));
 		DrawFormatStringF(100.0f, 120.0f, GetColor(255, 255, 0), "%d : %d : %d : %d", g_time.h, g_time.m, g_time.s, g_time.frame_count);
 	}
 
-	DrawFormatString(200, 200, GetColor(0, 0, 0), "%d", kill);
+	
 }
 //=====================================================================
 //	終了処理
@@ -191,13 +195,15 @@ void GameSet()
 //	ゲーム中の処理
 void GamePlay()
 {
-	Float2 mouse;
-	mouse.x = (float)GetMouseX();
-	mouse.y = (float)GetMouseY();
+	
 
 	//	ボールが待機状態で無いとき
 	if (ball_state != BALL_STAY)
 	{
+		Float2 mouse;
+		mouse.x = (float)GetMouseX();
+		mouse.y = (float)GetMouseY();
+
 		//	マウスをクリックした瞬間
 		if (PushMouseInput(MOUSE_INPUT_LEFT) || PushMouseInput(MOUSE_INPUT_RIGHT))
 		{
@@ -283,7 +289,7 @@ void GamePlay()
 		if (CheckMouseInput(MOUSE_INPUT_LEFT) || CheckMouseInput(MOUSE_INPUT_RIGHT))
 		{
 			//	マウス座標の取得
-			Float2 mosue;
+			Float2 mouse;
 			mouse.x = (float)GetMouseX();
 			mouse.y = (float)GetMouseY();
 			//	マウスと円の当たり判定
@@ -359,13 +365,20 @@ void GamePlay()
 			if (block[i].life > 0)
 			{
 				//	プレイヤーのスピードを変える
-				if (ball_pos.x<block[i].pos.x || ball_pos.x>block[i].pos.x + BLOCK_W)
+				if (block[i].pos.x < ball_pos.x < block[i].pos.x + BLOCK_W)
 				{
-					ball_speed.y *= -1.0f;
+					if (block[i].pos.y > ball_pos.y || block[i].pos.y + BLOCK_H < ball_pos.y)
+					{
+						ball_speed.y *= -1.0f;
+					}
 				}
-				if (ball_pos.y<block[i].pos.y || ball_pos.y>block[i].pos.y + BLOCK_H)
+				
+				if (block[i].pos.y < ball_pos.y + BALL_R && ball_pos.y - BALL_R < block[i].pos.y + BLOCK_H)
 				{
-					ball_speed.x *= -1.0f;
+					if (block[i].pos.x > ball_pos.x || block[i].pos.x + BLOCK_W < ball_pos.x)
+					{
+						ball_speed.x *= -1.0f;
+					}
 				}
 
 				//	ブロックの体力を減らす
