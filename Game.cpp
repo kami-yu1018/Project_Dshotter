@@ -22,6 +22,17 @@ Float2 ball_speed;		//	ボールのスピード
 
 bool line;				//	線が引かれている状態か
 
+//	シーン
+enum
+{
+	SCENE_OP,
+	SCENE_GAME,
+	SCENE_GAMEOVER,
+	SCENE_CLEAR,
+};
+
+int scene;
+
 //	インスタンス化
 Hit hit_obj;
 
@@ -32,6 +43,66 @@ Block block[BLOCK_MAX];
 //	初期化処理
 //=====================================================================
 void GameInit()
+{
+	scene = SCENE_OP;
+}
+//=====================================================================
+//	更新処理
+//=====================================================================
+void GameUpdate()
+{
+	//	スペースキーを押したらゲームを開始する
+	if (CheckHitKey(KEY_INPUT_SPACE))
+	{
+		if (scene == SCENE_OP)
+		{
+			scene = SCENE_GAME;
+			GameSet();
+		}
+	}
+
+	if (scene == SCENE_GAME)
+	{
+		GamePlay();
+	}
+	
+}
+//=====================================================================
+//	描画処理
+//=====================================================================
+void GameRender()
+{
+	//	点の描画
+	DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 0, 0));
+	DrawCircleAA(point[1].x, point[1].y, 5.0f, 50, GetColor(128, 128, 128));
+	DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(0, 0, 255));
+
+	//	線の描画
+	Float2 pos1 = point[0];
+	Float2 pos2 = point[2];
+	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
+
+	//	ボールの描画
+	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
+
+	for(int i=0;i<BLOCK_MAX;++i)
+	{
+		if(block[i].life>0)
+		{
+			DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
+		}
+	}
+}
+//=====================================================================
+//	終了処理
+//=====================================================================
+void GameExit()
+{
+
+}
+
+//	ゲーム本編の初期設定
+void GameSet()
 {
 	//	各初期化処理
 	ball_state = BALL_BEFORE;
@@ -47,12 +118,10 @@ void GameInit()
 		block[i].Block_area();
 		block[i].Init();
 	}
-
 }
-//=====================================================================
-//	更新処理
-//=====================================================================
-void GameUpdate()
+
+//	ゲーム中の処理
+void GamePlay()
 {
 	Float2 mouse;
 	mouse.x = (float)GetMouseX();
@@ -62,7 +131,7 @@ void GameUpdate()
 	if (ball_state != BALL_STAY)
 	{
 		//	マウスをクリックした瞬間
-		if (PushMouseInput(MOUSE_INPUT_LEFT)||PushMouseInput(MOUSE_INPUT_RIGHT))
+		if (PushMouseInput(MOUSE_INPUT_LEFT) || PushMouseInput(MOUSE_INPUT_RIGHT))
 		{
 			//	起点、終点、中間点を同じ座標に打つ
 			for (int i = 0; i < 3; ++i)
@@ -71,7 +140,7 @@ void GameUpdate()
 			}
 			//	ボールの座標もマウスの位置に設定
 			//	（初球のみ）
-			if(first_ball==0)
+			if (first_ball == 0)
 			{
 				ball_pos = mouse;
 			}
@@ -122,7 +191,7 @@ void GameUpdate()
 		}
 	}
 
-	
+
 
 	//	始点と終点が一致していないとき
 	if (point[1].x != point[2].x && point[1].y != point[2].y)
@@ -154,7 +223,7 @@ void GameUpdate()
 				//	ボールがマウス座標と同じになる
 				ball_pos = mouse;
 				//	ボールをキャッチしている秒数をカウント
-				ball_chach=1;
+				ball_chach = 1;
 			}
 		}
 		//	マウスを押していない時
@@ -200,12 +269,12 @@ void GameUpdate()
 
 		if (hit_obj.HitLineCircle(point[0], point[2], ball_pos, BALL_R))
 		{
-			if(line == 1)
+			if (line == 1)
 			{
 				ball_pos = hit_obj.pos;
 
-				ball_speed = {0.0f,0.0f};
-				
+				ball_speed = { 0.0f,0.0f };
+
 				ball_state = BALL_STAY;
 			}
 		}
@@ -214,54 +283,30 @@ void GameUpdate()
 	//	ボールとブロックの当たり判定
 	for (int i = 0; i < BLOCK_MAX; ++i)
 	{
-		if (hit_obj.HitBoxCircle(block[i].pos, BLOCK_W, BLOCK_H, ball_pos, BALL_R))
+		if (hit_obj.HitBoxCircle(block[i].pos, BLOCK_W, BLOCK_H, ball_pos, BALL_R) == 1)
 		{
+
 			//	ブロックの体力があるときに作動するようにする
 			if (block[i].life > 0)
 			{
+				//	プレイヤーのスピードを変える
+				if (ball_pos.x<block[i].pos.x || ball_pos.x>block[i].pos.x + BLOCK_W)
+				{
+					ball_speed.y *= -1.0f;
+				}
+				if (ball_pos.y<block[i].pos.y || ball_pos.y>block[i].pos.y + BLOCK_H)
+				{
+					ball_speed.x *= -1.0f;
+				}
+
 				//	ブロックの体力を減らす
 				block[i].life--;
 				if (block[i].life < 0)
 				{
 					block[i].life = 0;
 				}
-
-				//	プレイヤーのスピードを変える
 			}
 
 		}
 	}
-}
-//=====================================================================
-//	描画処理
-//=====================================================================
-void GameRender()
-{
-	//	点の描画
-	DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 0, 0));
-	DrawCircleAA(point[1].x, point[1].y, 5.0f, 50, GetColor(128, 128, 128));
-	DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(0, 0, 255));
-
-	//	線の描画
-	Float2 pos1 = point[0];
-	Float2 pos2 = point[2];
-	DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
-
-	//	ボールの描画
-	DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
-
-	for(int i=0;i<BLOCK_MAX;++i)
-	{
-		if(block[i].life>0)
-		{
-			DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(255, 0, 0), TRUE);
-		}
-	}
-}
-//=====================================================================
-//	終了処理
-//=====================================================================
-void GameExit()
-{
-
 }

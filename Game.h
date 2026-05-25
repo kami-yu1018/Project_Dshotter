@@ -8,3 +8,6 @@ void GameInit();
 void GameUpdate();
 void GameRender();
 void GameExit();
+
+void GameSet();
+void GamePlay();
