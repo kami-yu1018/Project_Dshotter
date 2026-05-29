@@ -7,3 +7,10 @@ struct Float2
 	float y;
 };
 
+//	F
+struct Color
+{
+	int r;
+	int g;
+	int b;
+};

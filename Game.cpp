@@ -127,7 +127,7 @@ void GameRender()
 		{
 			if (block[i].life > 0)
 			{
-				DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, block[i].color, TRUE);
+				DrawBoxAA(block[i].pos.x, block[i].pos.y, block[i].pos.x + BLOCK_W, block[i].pos.y + BLOCK_H, GetColor(block[i].color.r,block[i].color.g,block[i].color.b), TRUE);
 			}
 		}
 	}

@@ -18,7 +18,7 @@ public:
 	//	ブロックの体力
 	int life;
 
-	unsigned int color;
+	Color color;
 
 	//	ブロックの位置を決める
 	void Block_area()
@@ -35,14 +35,14 @@ public:
 
 		life = 2;
 
-		color = (255,255,0);
+		color = { 255,255,0 };
 	}
 
 	void ColorChange()
 	{
 		if (life == 1)
 		{
-			color = (255, 0, 0);
+			color = { 255,0,0 };
 		}
 	}
 };
