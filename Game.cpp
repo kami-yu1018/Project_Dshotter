@@ -110,17 +110,16 @@ void GameRender()
 	if(scene==SCENE_GAME)
 	{
 		//	点の描画
-		DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 0, 0));
-		DrawCircleAA(point[1].x, point[1].y, 5.0f, 50, GetColor(128, 128, 128));
-		DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(0, 0, 255));
+		DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 255, 255));
+		DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(255, 255, 255));
 
 		//	線の描画
 		Float2 pos1 = point[0];
 		Float2 pos2 = point[2];
-		DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(0, 255, 0));
+		DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(255, 255, 255));
 
 		//	ボールの描画
-		DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(0, 255, 255));
+		DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(255, 255, 255));
 
 		//	ブロックの描画
 		for (int i = 0; i < BLOCK_MAX; ++i)
