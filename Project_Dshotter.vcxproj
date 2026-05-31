@@ -132,6 +132,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hit.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Val.h" />
   </ItemGroup>
