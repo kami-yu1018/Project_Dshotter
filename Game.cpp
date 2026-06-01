@@ -49,7 +49,11 @@ Bgm bgm;
 int menu_b;
 int play_b;
 
-
+Se se;
+int ballhit_se;
+int linehit_se;
+int victory_se;
+int lose_se;
 
 //=====================================================================
 //	初期化処理
@@ -61,6 +65,11 @@ void GameInit()
 	menu_b = LoadSoundMem("data/sound/bgm_menu.mp3");
 	play_b = LoadSoundMem("data/sound/bgm_play.mp3");
 
+	ballhit_se = LoadSoundMem("data/sound/se_hitball.mp3");
+	linehit_se = LoadSoundMem("data/sound/se_lineball.mp3");
+	victory_se = LoadSoundMem("data/sound/se_victory.mp3");
+	lose_se = LoadSoundMem("data/sound/se_lose.mp3");
+
 	bgm.Set(menu_b);
 }
 //=====================================================================
@@ -68,18 +77,30 @@ void GameInit()
 //=====================================================================
 void GameUpdate()
 {
-	//	スペースキーを押したらゲームを開始する
-	if (CheckHitKey(KEY_INPUT_SPACE))
+	if (scene == SCENE_OP)
 	{
-		if (scene == SCENE_OP)
+		if (CheckHitKey(KEY_INPUT_SPACE))
 		{
+			//	スペースキーを押したらゲームを開始する
 			scene = SCENE_GAME;
 			GameSet();
+		}
+		se.Reset_SeCheck();
+		if (CheckSoundMem(lose_se) == 1 || CheckSoundMem(victory_se) == 1)
+		{
+			se.StopSe(lose_se);
+			se.StopSe(victory_se);
 		}
 	}
 
 	if (scene == SCENE_GAME)
 	{
+		if (CheckSoundMem(lose_se) == 1 || CheckSoundMem(victory_se) == 1)
+		{
+			se.StopSe(lose_se);
+			se.StopSe(victory_se);
+		}
+
 		//	ゲームの処理
 		GamePlay();
 
@@ -105,14 +126,30 @@ void GameUpdate()
 	if (scene == SCENE_GAMEOVER)
 	{
 		EndGame_Next();
+		bgm.StopBgm(play_b);
+		if(se.se_check == 0)
+		{
+			se.PlaySe(lose_se);
+			se.se_check = 1;
+		}
 	}
 
 	if (scene == SCENE_CLEAR)
 	{
 		EndGame_Next();
+		bgm.StopBgm(play_b);
+		if (se.se_check == 0)
+		{
+			se.PlaySe(victory_se);
+			se.se_check = 1;
+		}
 	}
-	
-	bgm.ChangeBgm(menu_b, play_b, scene);
+
+	if (CheckSoundMem(lose_se) == 0 && CheckSoundMem(victory_se) == 0)
+	{
+		bgm.ChangeBgm(menu_b, play_b, scene);
+	}
+
 }
 //=====================================================================
 //	描画処理
@@ -121,17 +158,24 @@ void GameRender()
 {
 	if(scene==SCENE_GAME)
 	{
-		//	点の描画
-		DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 255, 255));
-		DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(255, 255, 255));
+		if(line==1)
 
-		//	線の描画
-		Float2 pos1 = point[0];
-		Float2 pos2 = point[2];
-		DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(255, 255, 255));
+		{
+			//	点の描画
+			DrawCircleAA(point[0].x, point[0].y, 5.0f, 50, GetColor(255, 255, 255));
+			DrawCircleAA(point[2].x, point[2].y, 5.0f, 50, GetColor(255, 255, 255));
+
+			//	線の描画
+			Float2 pos1 = point[0];
+			Float2 pos2 = point[2];
+			DrawLineAA(pos1.x, pos1.y, pos2.x, pos2.y, GetColor(255, 255, 255));
+		}
 
 		//	ボールの描画
-		DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(255, 255, 255));
+		if(ball_state!=BALL_BEFORE)
+		{
+			DrawCircleAA(ball_pos.x, ball_pos.y, BALL_R, 50, GetColor(255, 255, 255));
+		}
 
 		//	ブロックの描画
 		for (int i = 0; i < BLOCK_MAX; ++i)
@@ -207,8 +251,6 @@ void GameSet()
 //	ゲーム中の処理
 void GamePlay()
 {
-	
-
 	//	ボールが待機状態で無いとき
 	if (ball_state != BALL_STAY)
 	{
@@ -277,8 +319,6 @@ void GamePlay()
 			}
 		}
 	}
-
-
 
 	//	始点と終点が一致していないとき
 	if (point[1].x != point[2].x && point[1].y != point[2].y)
@@ -354,6 +394,7 @@ void GamePlay()
 		ball_pos.x += ball_speed.x;
 		ball_pos.y += ball_speed.y;
 
+		//	線とボールの当たり判定
 		if (hit_obj.HitLineCircle(point[0], point[2], ball_pos, BALL_R))
 		{
 			if (line == 1)
@@ -363,7 +404,18 @@ void GamePlay()
 				ball_speed = { 0.0f,0.0f };
 
 				ball_state = BALL_STAY;
+
+				//	Seを鳴らす（1回のみ）
+				if (se.se_check == 0)
+				{
+					se.PlaySe(linehit_se);
+					se.se_check = 1;
+				}
 			}
+		}
+		else
+		{
+			se.Reset_SeCheck();
 		}
 	}
 
@@ -399,11 +451,21 @@ void GamePlay()
 				{
 					block[i].life = 0;
 				}
+
+				//	Seを鳴らす（1回のみ）
+				if (se.se_check == 0)
+				{
+					se.PlaySe(ballhit_se);
+					se.se_check = 1;
+				}
 			}
+		}
+		else
+		{
+			se.Reset_SeCheck();
 		}
 		//	ブロックの色を変更する
 		block[i].ColorChange();
-
 	}
 }
 

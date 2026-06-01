@@ -10,13 +10,20 @@ public:
 
 	//	‚a‚f‚lØ‚è‘Ö‚¦
 	void ChangeBgm(int bgm_1,int bgm_2,int scene);
+
+	void StopBgm(int bgm);
 };
 
 class Se
 {
-protected:
-	int ballhit_se = LoadSoundMem("data/sound/se_hitball.mp3");
-	int linehit_se = LoadSoundMem("data/sound/se_lineball.mp3");
-	int victory_se = LoadSoundMem("data/sound/se_victory.mp3");
-	int lose_se = LoadSoundMem("data/sound/se_lose.mp3");
+
+public:
+	
+	int se_check;
+
+	void PlaySe(int se);
+
+	void Reset_SeCheck();
+
+	void StopSe(int se);
 };
