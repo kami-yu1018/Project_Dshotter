@@ -55,6 +55,14 @@ int linehit_se;
 int victory_se;
 int lose_se;
 
+int fonthandle_op1;
+int fonthandle_op2;
+				  
+int fonthandle_ed1;
+int fonthandle_ed2;
+
+int text_count;
+bool text_flash;
 //=====================================================================
 //	初期化処理
 //=====================================================================
@@ -71,12 +79,35 @@ void GameInit()
 	lose_se = LoadSoundMem("data/sound/se_lose.mp3");
 
 	bgm.Set(menu_b);
+
+	fonthandle_op1 = CreateFontToHandle(NULL, 100, 7. - 1);;
+	fonthandle_op2 = CreateFontToHandle(NULL, 30, 1. - 1);
+
+	fonthandle_ed1 = CreateFontToHandle(NULL, 100, 1. - 1);
+	fonthandle_ed2 = CreateFontToHandle(NULL, 25, 1, -1);
+
+	text_count = 0;
+	text_flash = 1;
 }
 //=====================================================================
 //	更新処理
 //=====================================================================
 void GameUpdate()
 {
+
+	text_count++;
+	if (text_count > 30)
+	{
+		text_count = 0;
+		if (text_flash == 0)
+		{
+			text_flash = 1;
+		}
+		else
+		{
+			text_flash = 0;
+		}
+	}
 	if (scene == SCENE_OP)
 	{
 		if (CheckHitKey(KEY_INPUT_SPACE))
@@ -191,22 +222,29 @@ void GameRender()
 	//	タイトル
 	if (scene == SCENE_OP)
 	{
-		DrawStringF(100.0f, 100.0f,"DragShotter", GetColor(255, 0, 0));
-		DrawStringF(100.0f, 120.0f, "Push Space To Start", GetColor(255, 0, 0));
+		DrawStringFToHandle(300.0f, 300.0f,"DragShotter", GetColor(255, 255, 255),fonthandle_op1);
+		if(text_flash==1)
+		{
+			DrawStringFToHandle(450.0f, 500.0f, "Push Space To Start", GetColor(255, 255, 255), fonthandle_op2);
+		}
 	}
 	//	ゲームオーバー
 	if (scene == SCENE_GAMEOVER)
 	{
-		DrawStringF(100.0f, 100.0f, "GameOver", GetColor(0, 0, 255));
-		DrawStringF(10.0f, 140.0f, "Ｒ→リトライ", GetColor(255, 0, 0));
-		DrawStringF(10.0f, 160.0f, "ENTER→タイトルへ戻る", GetColor(255, 0, 0));
+		DrawStringFToHandle(350.0f, 300.0f, "GameOver", GetColor(0, 0, 255),fonthandle_ed1);
+		if (text_flash == 1)
+		{
+			DrawStringFToHandle(250.0f, 500.0f, "Ｒ→リトライ", GetColor(255, 255, 255), fonthandle_ed2);
+			DrawStringFToHandle(600.0f, 500.0f, "ENTER→タイトルへ戻る", GetColor(255, 255, 255), fonthandle_ed2);
+		}
 
 	}
 	//	クリア
 	if (scene == SCENE_CLEAR)
 	{
-		DrawStringF(100.0f, 100.0f, "GameClear", GetColor(255, 0, 0));
-		DrawFormatStringF(100.0f, 120.0f, GetColor(255, 255, 0), "%d : %d : %d : %d", g_time.h, g_time.m, g_time.s, g_time.frame_count);
+		DrawStringFToHandle(300.0f, 300.0f, "GameClear", GetColor(255, 0, 0),fonthandle_ed1);
+
+		DrawFormatStringFToHandle(400.0f, 500.0f, GetColor(255, 255, 0),fonthandle_ed2, "%d : %d : %d : %d", g_time.h, g_time.m, g_time.s, g_time.frame_count);
 	}
 
 	
