@@ -4,6 +4,7 @@
 #include"Val.h"
 #include"Block.h"
 #include"Time.h"
+#include"Sound.h"
 
 void GameInit();
 void GameUpdate();

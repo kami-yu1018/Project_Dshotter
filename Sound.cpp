@@ -1,30 +1,29 @@
 #include"Sound.h"
 
-void Bgm::Play(int bgm)
+void Bgm::Set(int bgm)
 {
 	PlaySoundMem(bgm, DX_PLAYTYPE_LOOP);
 }
 
-void Bgm::ChangeBgm(int bgm_1, int bgm_2,int mode)
+void Bgm::ChangeBgm(int bgm_1, int bgm_2,int scene)
 {
-	if (CheckMusic() == 0)
+	//	メニュー→本編
+	if (scene == 1)
 	{
-		if (mode == 1)
+		if (CheckSoundMem(bgm_1) == 1)
 		{
-			if (CheckSoundMem(bgm_1) == 1)
-			{
-				StopMusic();
-				PlaySoundMem(bgm_2,DX_PLAYTYPE_LOOP);
-
-			}
-			else
-			{
-				if (CheckMusicMem(bgm_2) == 1)
-				{
-					StopMusic();
-					PlaySoundMem(bgm_1, DX_PLAYTYPE_LOOP);
-				}
-			}
+			StopSoundMem(bgm_1);
+			PlaySoundMem(bgm_2, DX_PLAYTYPE_LOOP);
+		}
+	}
+	//	本編→メニュー
+	else	
+	{
+		if (CheckSoundMem(bgm_2) == 1)
+		{
+			StopSoundMem(bgm_2);
+			PlaySoundMem(bgm_1, DX_PLAYTYPE_LOOP);
 		}
 	}
 }
+

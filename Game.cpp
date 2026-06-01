@@ -45,12 +45,23 @@ Block block[BLOCK_MAX];
 
 Time g_time;
 
+Bgm bgm;
+int menu_b;
+int play_b;
+
+
+
 //=====================================================================
 //	‰Šú‰»ˆ—
 //=====================================================================
 void GameInit()
 {
 	scene = SCENE_OP;
+
+	menu_b = LoadSoundMem("data/sound/bgm_menu.mp3");
+	play_b = LoadSoundMem("data/sound/bgm_play.mp3");
+
+	bgm.Set(menu_b);
 }
 //=====================================================================
 //	XVˆ—
@@ -101,6 +112,7 @@ void GameUpdate()
 		EndGame_Next();
 	}
 	
+	bgm.ChangeBgm(menu_b, play_b, scene);
 }
 //=====================================================================
 //	•`‰æˆ—
