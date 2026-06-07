@@ -245,6 +245,8 @@ void GameRender()
 		DrawStringFToHandle(300.0f, 300.0f, "GameClear", GetColor(255, 0, 0),fonthandle_ed1);
 
 		DrawFormatStringFToHandle(400.0f, 500.0f, GetColor(255, 255, 0),fonthandle_ed2, "%d : %d : %d : %d", g_time.h, g_time.m, g_time.s, g_time.frame_count);
+		DrawStringFToHandle(250.0f, 650.0f, "Ｒ→リトライ", GetColor(255, 255, 255), fonthandle_ed2);
+		DrawStringFToHandle(600.0f, 650.0f, "ENTER→タイトルへ戻る", GetColor(255, 255, 255), fonthandle_ed2);
 	}
 
 	
